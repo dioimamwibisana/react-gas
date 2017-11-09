@@ -29,29 +29,7 @@ const rules = [
     test: /\.(js|jsx)$/,
     exclude: /node_modules/,
     use: ['babel-loader']
-  },
-  {
-    test: /\.svg$/,
-    use: [
-      {
-        loader: 'babel-loader',
-      },
-      {
-        loader: 'react-svg-loader',
-        options: {
-          svgo: {
-            plugins: [
-              {
-                removeTitle: true,
-              },
-            ],
-            floatPrecision: 2,
-          },
-        },
-      },
-    ],
-    include: paths.svg,
-  },
+  }
 ]
 
 // Almost the same rule is used in both development and production
