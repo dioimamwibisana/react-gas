@@ -13,7 +13,7 @@ const Html = ({ children }) => (
     </head>
     <body>
       <div
-        id='root'
+        id='app'
         dangerouslySetInnerHTML={ { __html: children } } // eslint-disable-line
       />
       <script type='text/javascript' src={ `/${ outputFiles.vendor }` } />

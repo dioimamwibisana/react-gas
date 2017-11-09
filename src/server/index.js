@@ -10,6 +10,8 @@ import 'babel-polyfill';
 const app = express();
 const port = 8080;
 
+app.use('/client', express.static('build/client'));
+
 app.get('*', function (req, res) {
   const context = {};
   const htmlContent = renderToString(

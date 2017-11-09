@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "Simple react boilerplate/starter-kit for better development using React, Express, React Router, and Webpack",
   "scripts": {
+    "clean": "rm -rf ./build",
     "server:build": "cross-env NODE_ENV=\"production\" webpack --config webpack.config.server.js",
-    "build": "npm run server:build",
+    "client:build": "npm run clean && cross-env NODE_ENV=\"production\" webpack",
+    "build": "npm run client:build && npm run server:build",
     "production": "npm run build && npm start",
+    "dev": "webpack-dev-server",
     "start": "node ./build/server.js"
   },
   "repository": {
@@ -41,11 +44,14 @@
     "cross-env": "^5.1.1",
     "css-loader": "^0.28.7",
     "extract-text-webpack-plugin": "^3.0.2",
+    "html-webpack-plugin": "^2.30.1",
     "node-sass": "^4.6.0",
     "postcss-loader": "^2.0.8",
+    "react-svg-loader": "^2.1.0",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

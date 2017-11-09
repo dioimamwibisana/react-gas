@@ -9,6 +9,14 @@ const IS_DEVELOPMENT = NODE_ENV === 'development';
 
 const outputFiles = require('./output-files').outputFiles;
 
+const paths = {
+  source: path.join(__dirname, '../src'),
+  // javascript: path.join(__dirname, '../source/js'),
+  // images: path.join(__dirname, '../source/assets/img'),
+  // svg: path.join(__dirname, '../source/assets/svg'),
+  build: path.join(__dirname, '../build')
+};
+
 // ----------
 // RULES
 // ----------
@@ -21,7 +29,29 @@ const rules = [
     test: /\.(js|jsx)$/,
     exclude: /node_modules/,
     use: ['babel-loader']
-  }
+  },
+  {
+    test: /\.svg$/,
+    use: [
+      {
+        loader: 'babel-loader',
+      },
+      {
+        loader: 'react-svg-loader',
+        options: {
+          svgo: {
+            plugins: [
+              {
+                removeTitle: true,
+              },
+            ],
+            floatPrecision: 2,
+          },
+        },
+      },
+    ],
+    include: paths.svg,
+  },
 ]
 
 // Almost the same rule is used in both development and production
@@ -140,5 +170,6 @@ module.exports = {
   outputFiles,
   rules,
   plugins,
-  resolve
+  resolve,
+  paths
 }
