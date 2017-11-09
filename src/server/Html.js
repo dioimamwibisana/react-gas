@@ -1,19 +1,25 @@
 import React from 'react';
+import { outputFiles } from '../../webpack/output-files';
 
-const Html = (props) => {
-  return(
-    <html>
-      <head>
-        <title>${props.title}</title>
-      </head>
+const Html = ({ children }) => (
+  <html lang='en'>
+    <head>
+      <meta charSet='utf-8' />
+      <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0' />
 
-      <body>
-        <div id="app" dangerouslySetInnerHTML={{ __html: props.htmlContent }} />
-      </body>
+      <title>React</title>
 
-      <script src="/js/main.js"></script>
-    </html>
-  )
-}
+      <link rel='stylesheet' href={ `/${ outputFiles.css }` } />
+    </head>
+    <body>
+      <div
+        id='root'
+        dangerouslySetInnerHTML={ { __html: children } } // eslint-disable-line
+      />
+      <script type='text/javascript' src={ `/${ outputFiles.vendor }` } />
+      <script type='text/javascript' src={ `/${ outputFiles.client }` } />
+    </body>
+  </html>
+);
 
 export default Html;
