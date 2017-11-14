@@ -1,27 +1,42 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
 import { AppContainer } from 'react-hot-loader';
-import App from '../common/App';
-import 'babel-polyfill';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import { hydrate } from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 
-const render = Component => {
-  ReactDOM.hydrate(
+import App from '../common/app';
+import reducers from '../common/reducers';
+
+// Grab the state from a global variable injected into the server-generated HTML
+const preloadedState = window.__PRELOADED_STATE__;
+
+// Create Redux store with initial state
+const store = (module.hot && module.hot.data && module.hot.data.store)
+  ? module.hot.data.store
+  : createStore(
+    reducers, preloadedState,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  );
+
+const contentEl = document.getElementById('app');
+
+hydrate(
+  <Provider store={store}>
     <AppContainer>
       <BrowserRouter>
-        <Component/>
+        <App />
       </BrowserRouter>
-    </AppContainer>,
-    document.getElementById('app')
-  )
-};
-
-//Render app
-render(App);
+    </AppContainer>
+  </Provider>,
+  contentEl
+);
 
 if (module.hot) {
-  module.hot.accept('../common/App', () => {
-    const NewClient = require('../common/App');
-    render(NewClient);
-  })
+
+  module.hot.accept();
+
+  module.hot.dispose((data) => {
+    data.store = store;
+  });
 }

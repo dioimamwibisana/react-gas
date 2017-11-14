@@ -1,25 +1,38 @@
-import React from 'react';
-import { outputFiles } from '../../webpack/output-files';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import Helmet from 'react-helmet';
 
-const Html = ({ children }) => (
-  <html lang='en'>
-    <head>
-      <meta charSet='utf-8' />
-      <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0' />
+export default class Html extends Component {
+  render() {
+    const { assets, store, content } = this.props;
+    const preloadedState = store.getState();
+    const helmet = Helmet.renderStatic();
+    const htmlAttrs = helmet.htmlAttributes.toComponent();
+    const bodyAttrs = helmet.bodyAttributes.toComponent();
 
-      <title>React</title>
 
-      <link rel='stylesheet' href={ `/${ outputFiles.css }` } />
-    </head>
-    <body>
-      <div
-        id='app'
-        dangerouslySetInnerHTML={ { __html: children } } // eslint-disable-line
-      />
-      <script type='text/javascript' src={ `/${ outputFiles.vendor }` } />
-      <script type='text/javascript' src={ `/${ outputFiles.client }` } />
-    </body>
-  </html>
-);
+    return (
+      <html {...htmlAttrs}>
+        <head>
+          {helmet.title.toComponent()}
+          {helmet.meta.toComponent()}
+        </head>
+        <body {...bodyAttrs}>
+          <div id="app" dangerouslySetInnerHTML={{ __html: content }}/>
+          <script
+            dangerouslySetInnerHTML={{ __html: `window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState)}` }}
+          />
+          <script src={ assets.vendor.js } />
+          <script src={ assets.main.js } />
+        </body>
+      </html>
+    );
+  }
 
-export default Html;
+}
+
+Html.propTypes = {
+  content: PropTypes.string,
+  store: PropTypes.object,
+  assets: PropTypes.object
+};

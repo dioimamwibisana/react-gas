@@ -1,42 +1,70 @@
-import express from 'express';
+import Express from 'express';
 import React from 'react';
-import { renderToString, renderToStaticMarkup } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom';
-import App from '../common/App';
-import Html from './Html';
+import { renderToString } from 'react-dom/server';
+import { createStore } from 'redux';
+import {
+  StaticRouter
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
 
-import 'babel-polyfill';
+// dev server only
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
+import webpack from 'webpack';
 
-const app = express();
-const port = 8080;
+import webpackDevConfig from '../../webpack/development.js';
 
-app.use('/client', express.static('build/client'));
+import Layout from '../common/app.js';
+import reducers from '../common/reducers';
+import Html from './html.js';
+import assets from '../../webpack-assets.json';
 
-app.get('*', function (req, res) {
+const app = Express();
+
+app.use('/public', Express.static('public', { maxAge: '365d' }));
+
+// TODO ensure this gets DCE
+if (process.env.NODE_ENV === 'development') {
+  const compiler = webpack(webpackDevConfig);
+
+  app.use(webpackDevMiddleware(compiler, {
+    // this tells the middleware where to send assets in memory, so
+    // if you're seeing 404's for assets it's probably because this isn't
+    // set correctly in this middleware
+    publicPath: webpackDevConfig.output.publicPath,
+    hot: true
+  }));
+
+  app.use(webpackHotMiddleware(compiler, {
+    reload: true // reload page when webpack gets stuck
+  }));
+}
+
+app.get('*', (req, res) => {
+
+  const store = createStore(reducers);
   const context = {};
-  const htmlContent = renderToString(
+
+  const content = renderToString(
     <StaticRouter location={req.url} context={context}>
-      <App />
+      <Provider store={store} key="provider">
+        <Layout />
+      </Provider>
     </StaticRouter>
   );
 
-  const renderHtml = (htmlContent) => {
-    const html = renderToStaticMarkup(<Html children={htmlContent} />);
-    return `<!doctype html>${html}`;
-  };
+  // in order for the bundled react to reconcile with the server rendered tree,
+  // we must renderToString the two different sections, so that the render from
+  // client/index has a matching tree
+  const html = renderToString(
+    <Html
+      store={ store }
+      assets={ assets }
+      content= { content }
+    />
+  );
 
-  // Checking is page is 404
-  const status = context.status === '404' ? 404 : 200;
-
-  res.status(status).send(renderHtml(htmlContent));
+  res.send(html);
 });
 
-
-// Start listening
-app.listen(port, (error) => {
-  if (error) {
-    console.error(error);
-  } else {
-    console.info(`Listening on port ${ port }`);
-  }
-});
+export default app;

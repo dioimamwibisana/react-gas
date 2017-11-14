@@ -1,25 +1,28 @@
-import React, {Component} from 'react';
-import { Route, Switch } from 'react-router-dom';
-import Home from './components/Home';
-import About from './components/About';
-import NotFound from './components/NotFound';
-import Header from './components/Header';
+import React, { Component } from 'react';
+import { Link, Route, Switch } from 'react-router-dom';
 
-import '../assets/styles/styles.scss'
+import Home from './components/home.js';
+import About from './components/about.js';
 
-class App extends Component{
-  render(){
-    return(
+//debugger; // eslint-disable-line no-debugger
+
+export default class Layout extends Component {
+  render() {
+    return (
       <div>
-        <Header/>
+        <div className={'b-nav'}>
+          <div className={'b-nav__wrap'}>
+            <div className={'b-nav__homelink'}>
+              <Link to='/'>Home</Link>
+              <Link to='/about'>About</Link>
+            </div>
+          </div>
+        </div>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route path="/about" component={About} />
-          <Route path='*' component={ NotFound } />
+          <Route exact path="/about" component={About} />
         </Switch>
       </div>
-    )
+    );
   }
 }
-
-export default App;
