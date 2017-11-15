@@ -5,6 +5,7 @@ import { createStore } from 'redux';
 import { hydrate } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
+import '../styles/styles.scss';
 import App from '../common/app';
 import reducers from '../common/reducers';
 

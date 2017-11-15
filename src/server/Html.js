@@ -16,6 +16,8 @@ export default class Html extends Component {
         <head>
           {helmet.title.toComponent()}
           {helmet.meta.toComponent()}
+
+          <link rel="stylesheet" href={ assets.main.css }/>
         </head>
         <body {...bodyAttrs}>
           <div id="app" dangerouslySetInnerHTML={{ __html: content }}/>
